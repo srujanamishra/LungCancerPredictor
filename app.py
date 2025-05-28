@@ -38,8 +38,29 @@ input_data = user_input_features()
 
 if st.button("Predict"):
     prediction = model.predict(input_data)
-    probability = model.predict_proba(input_data)[0][1]  # Probability of being positive
+    probability = model.predict_proba(input_data)[0][1]  # Probability of being positive (i.e., lung cancer)
 
     result = "Positive for Lung Cancer" if prediction[0] == 1 else "Negative for Lung Cancer"
     st.success(f"Prediction: {result}")
-    st.info(f"Model confidence: {probability * 100:.2f}%")
+
+    # Determine risk level based on probability
+    if probability < 0.2:
+        risk_level = "Very Low"
+    elif probability < 0.4:
+        risk_level = "Low"
+    elif probability < 0.6:
+        risk_level = "Moderate"
+    elif probability < 0.8:
+        risk_level = "High"
+    else:
+        risk_level = "Very High"
+
+    # Properly formatted multi-line f-string
+    st.info(
+        (
+            f" **Risk Assessment: {risk_level}**\n\n"
+            f"Based on your responses, the model suggests a **{risk_level.lower()} likelihood** of lung cancer.\n\n"
+            f"> This prediction is based on statistical data and is **not a medical diagnosis**. "
+            f"If you have any health concerns, please consult a medical professional."
+        )
+    )
